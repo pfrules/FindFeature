@@ -3,11 +3,12 @@ files='data\';
 %files='datareal\';
 rawImageFolder = [files '\figure\'];   % ÊäÈëÎÄ¼þÂ·¾¶
 
- %PixelPoints=findpoint(rawImageFolder);%¼ì²â¸ÖÇò×ø±ê
- PixelPoints=subpixelDetection(rawImageFolder);
-save([files '\PixelPoints.mat'],'PixelPoints')
+ PixelPoints1=findpoint(rawImageFolder);%¼ì²â¸ÖÇò×ø±ê
+ save('point/PixelPoints1.mat','PixelPoints1')
+ PixelPoints2=subpixelDetection(rawImageFolder);
+ save('point/PixelPoints2.mat','PixelPoints2')
 load ([files '\PixelPoints.mat'])
-PixelPoints2 = PhantomDetectIdealFunc();
+PixelPoints3 = PhantomDetectIdealFunc();
 upperCenterLast=[720,206];
 lowerCenterLast=[720,1233];
 num=size(PixelPoints,1);

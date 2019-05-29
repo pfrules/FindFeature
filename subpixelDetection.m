@@ -21,17 +21,17 @@ for p=1:LengthFiles
 %     figure;
 %     imshow(img);
 %     hold on
-inmyway(img,centers, radii);
+result=inmyway(img,centers, radii);
       
-%     viscircles(centers,radii)
-    centers=round(centers);
-    num=size(centers,1);
-    halfLength=ceil(sqrt(2)*max(radii));
-    for i=1:num
-    circle(:,:,i)=imcrop(img,[centers(i,:)-halfLength 2*halfLength 2*halfLength]);
-    end
-    centers=inMyWay(circle);
-    
+% %     viscircles(centers,radii)
+%     centers=round(centers);
+     num=size(centers,1);
+%     halfLength=ceil(sqrt(2)*max(radii));
+%     for i=1:num
+%     circle(:,:,i)=imcrop(img,[centers(i,:)-halfLength 2*halfLength 2*halfLength]);
+%     end
+%     centers=inMyWay(circle);
+   centers=result; 
     
     n=size(img,2);
     if num<24
@@ -95,6 +95,7 @@ BW=edge(circle(:,:,i),'canny');
 [oimg,X,Y]=myZernike7(circle(:,:,i));
 end
 end
+
 function [centers, radii,img_sub] = ImagePreProcessor(fileLocation)
 %%
 %¶ÁÈ¡Ô´Í¼Ïñ
