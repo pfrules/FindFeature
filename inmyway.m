@@ -220,7 +220,14 @@ r=zeros(m,1);
 for i=1:m   
     KK=Coefficient(A_p,i);
     Coef{i}=zeros(10,1);
-    Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
+    %原作者方法
+    %Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
+    %我的方法
+    M=[K,-KK];
+    [U,D,V]=svd(M);
+    V=V/V(end,end);
+    Coef{i}=V(1:end-1,end);
+    
     K2=Coef{i}(2,1);                % 
     K3=Coef{i}(3,1);                % 
     sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角

@@ -3,8 +3,9 @@ files='data\';
 %files='datareal\';
 rawImageFolder = [files '\figure\'];   % 输入文件路径
 
- PixelPoints1=findpoint(rawImageFolder);%检测钢球坐标
- save('point/PixelPoints1.mat','PixelPoints1')
+%  PixelPoints1=findpoint(rawImageFolder);%检测钢球坐标
+%  save('point/PixelPoints1.mat','PixelPoints1')
+load('point/PixelPoints1.mat')
  PixelPoints2=subpixelDetection(rawImageFolder);
  save('point/PixelPoints2.mat','PixelPoints2')
 load ([files '\PixelPoints.mat'])
