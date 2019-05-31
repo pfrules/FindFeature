@@ -21,9 +21,10 @@ for p=1:LengthFiles
 %     figure;
 %     imshow(img);
 %     hold on
+    %viscircles(centers,radii)
 result=inmyway(img,centers, radii);
       
-% %     viscircles(centers,radii)
+
 %     centers=round(centers);
      num=size(centers,1);
 %     halfLength=ceil(sqrt(2)*max(radii));

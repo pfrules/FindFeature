@@ -1,6 +1,7 @@
 clc; clear; close all;
-files='data\';
-%files='datareal\';
+
+%files='C:\document\Findcircle\FindFeature\data\';
+files='C:\document\Findcircle\FindFeature\datareal\';
 rawImageFolder = [files '\figure\'];   % 输入文件路径
 
 %  PixelPoints1=findpoint(rawImageFolder);%检测钢球坐标

@@ -83,21 +83,27 @@ for i=1:size(centers,1)
         end
     end
     data(i).point=point;
-    %plot(point(:,1),point(:,2),'r*');
+   % plot(point(:,1),point(:,2),'r*');
 end
-resultdata=[];
 for p=1:size(centers,1)
 point=data(p).point;
 [mu,sigma]=normfit(point(:,3));
 %% 画直方图
-% [y,x]=hist(point(:,3),20);
-% figure(p)
-% bar(x,y,'FaceColor','r','EdgeColor','w');box off
-% xlim([mu-3*sigma,mu+3*sigma])
-% a2=axes;
-% ezplot(@(x)normpdf(x,mu,sigma),[mu-3*sigma,mu+3*sigma])
-% set(a2,'box','off','yaxislocation','right','color','none')
-% title '频数直方图与正态分布密度函数（拟合）'
+[y,x]=hist(point(:,3),20);
+M(:,1)=x.^2;
+M(:,2)=x;
+M(:,3)=1;
+M(:,4)=-y';
+[U,D,V]=svd(M);
+V=V(1:end-1,end)./V(end,end);
+ezplot(@(grayscale)V(1)*grayscale*grayscale+V(2)*grayscale+V(3),[min(x),max(x)])
+figure
+bar(x,y,'FaceColor','r','EdgeColor','w');box off
+xlim([mu-3*sigma,mu+3*sigma])
+a2=axes;
+ezplot(@(x)normpdf(x,mu,sigma),[mu-3*sigma,mu+3*sigma])
+set(a2,'box','off','yaxislocation','right','color','none')
+title '频数直方图与正态分布密度函数（拟合）'
 %%
 m=size(point,1);                     % 点数
 A={zeros(0,2)};                  % 元包数组中仅包含一个元素
@@ -105,8 +111,7 @@ A_g_v=repmat(A,m,1);             % 保存灰度值
 A_p=repmat(A,m,1);               % 保存5*5坐标值
 Coef=repmat(A,m,1);              % 系数
 Newpoint=zeros(m,2);
-D=repmat(A,25,1);
- Lp=img';     
+D=repmat(A,25,1);  
 for i=1:m
     x=point(i,1);
     y=point(i,2);
@@ -116,8 +121,8 @@ for i=1:m
         for k=-2:2
             A_p{i}(kk,1)=j;                % X方向
             A_p{i}(kk,2)=k;                % Y方向            
-            A_p{i}(kk,3)=Lp(x+j,y+k);      % 灰度值 向量表示
-            A_g_v{i}(j+3,k+3)=Lp(x+j,y+k); % 灰度值 矩阵表示          
+            A_p{i}(kk,3)=img(y+k,x+j);      % 灰度值 向量表示
+            A_g_v{i}(k+3,j+3)=img(y+k,x+j); % 灰度值 矩阵表示          
             kk=kk+1;
         end
     end
@@ -230,9 +235,14 @@ for i=1:m
     
     K2=Coef{i}(2,1);                % 
     K3=Coef{i}(3,1);                % 
-    sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
-    cos_Theta(i)=K3/sqrt(K2^2+K3^2);
+    %原作者
+%     sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
+%     cos_Theta(i)=K3/sqrt(K2^2+K3^2);
 
+    %修正
+    cos_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
+    sin_Theta(i)=K3/sqrt(K2^2+K3^2);
+    
     a=Coef{i}(1,1)-mu;
     b=Coef{i}(2,1)*cos_Theta(i)+Coef{i}(3,1)*sin_Theta(i);
     c=Coef{i}(4,1)*cos_Theta(i)^2+Coef{i}(5,1)*cos_Theta(i)*sin_Theta(i)+Coef{i}(6,1)*sin_Theta(i)^2;
@@ -240,7 +250,7 @@ for i=1:m
     options = optimset('Display','off','TolFun',1e-10,'TolX',1e-10);
     eq=@(rol) a+b*rol+c*rol^2+d*rol^3;
     rol = fsolve(eq,0.01,options);
-    
+    %figure;ezplot(@(rol) a+b*rol+c*rol^2+d*rol^3,[-3,3])
     r(i)=rol; %出问题了？
 %     if sin_Theta(i)*cos_Theta(i)<0
 %         r(i)=-rol; 
@@ -280,10 +290,11 @@ for i=1:m
     endpoint=[endpoint;Newpoint(i,:)];
 end
 
-% imshow(img);hold on
-% plot(point(:,1),point(:,2),'r*');                 %修正前
-% hold on
-% plot(endpoint(:,1),endpoint(:,2),'b*');          %修正后
+%figure(p);imshow(img);hold on
+plot(Newpoint(:,1),Newpoint(:,2),'y*');                 %修正前
+hold on
+plot(endpoint(:,1),endpoint(:,2),'b*');          %修正后
+plot(point(:,1),point(:,2),'r*');          %修正后
 % result.point=endpoint;
 [Re, center2, vertex]= MyEllipseDirectFit(endpoint(:,1:2));
 % result.Re=Re;
