@@ -7,23 +7,28 @@ rawImageFolder = [files '\figure\'];   % 输入文件路径
 %  PixelPoints1=findpoint(rawImageFolder);%检测钢球坐标
 %  save('point/PixelPoints1.mat','PixelPoints1')
 load('point/PixelPoints1.mat')
- PixelPoints2=subpixelDetection(rawImageFolder);
+ %PixelPoints2=subpixelDetection(rawImageFolder);
+  PixelPoints2=newSubpixelDetection(rawImageFolder);
  save('point/PixelPoints2.mat','PixelPoints2')
 load ([files '\PixelPoints.mat'])
 PixelPoints3 = PhantomDetectIdealFunc();
 upperCenterLast=[720,206];
 lowerCenterLast=[720,1233];
-num=size(PixelPoints,1);
+num=size(PixelPoints1,1);
 for i=1:num
-[PixelPoints(i).point,upperCenterLast,lowerCenterLast]=resort(PixelPoints(i).point,upperCenterLast,lowerCenterLast);
-PixelPoints(i).num=i;
+[PixelPoints1(i).point,upperCenterLast,lowerCenterLast]=resort(PixelPoints1(i).point,upperCenterLast,lowerCenterLast);
 end
-% upperCenterLast=[720,206];
-% lowerCenterLast=[720,1233];
-% for i=1:num
-% [PixelPoints2(i).point,upperCenterLast,lowerCenterLast]=resort(PixelPoints2(i).point,upperCenterLast,lowerCenterLast);
-% PixelPoints2(i).num=i;
-% end
+upperCenterLast=[720,206];
+lowerCenterLast=[720,1233];
+for i=1:num
+[PixelPoints2(i).point,upperCenterLast,lowerCenterLast]=resort(PixelPoints2(i).point,upperCenterLast,lowerCenterLast);
+end
+upperCenterLast=[720,206];
+lowerCenterLast=[720,1233];
+for i=1:num
+[PixelPoints3(i).point,upperCenterLast,lowerCenterLast]=resort(PixelPoints3(i).point,upperCenterLast,lowerCenterLast);
+end
+
 
 % figure;
 % hold on

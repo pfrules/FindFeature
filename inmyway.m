@@ -87,23 +87,32 @@ for i=1:size(centers,1)
 end
 for p=1:size(centers,1)
 point=data(p).point;
-[mu,sigma]=normfit(point(:,3));
-%% 画直方图
-[y,x]=hist(point(:,3),20);
-M(:,1)=x.^2;
-M(:,2)=x;
-M(:,3)=1;
-M(:,4)=-y';
-[U,D,V]=svd(M);
-V=V(1:end-1,end)./V(end,end);
-ezplot(@(grayscale)V(1)*grayscale*grayscale+V(2)*grayscale+V(3),[min(x),max(x)])
-figure
-bar(x,y,'FaceColor','r','EdgeColor','w');box off
-xlim([mu-3*sigma,mu+3*sigma])
-a2=axes;
-ezplot(@(x)normpdf(x,mu,sigma),[mu-3*sigma,mu+3*sigma])
-set(a2,'box','off','yaxislocation','right','color','none')
-title '频数直方图与正态分布密度函数（拟合）'
+% [mu,sigma]=normfit(point(:,3));
+% [y,x]=hist(point(:,3),20);
+% M=[];
+% M(:,1)=x.^2;
+% M(:,2)=x;
+% M(:,3)=1;
+% M(:,4)=-y';
+% [U,D,V]=svd(M);
+% V=V(1:end-1,end)./V(end,end);
+% mu=-V(2)/(2*V(1));
+% % if mu>max(point(:,3))||mu<min(point(:,3))
+% %     mu=max(point(:,3));
+% % end
+% mu=x(y==max(y));
+% mu=mu(end);
+% %% 画直方图
+% 
+% 
+% figure
+% bar(x,y,'FaceColor','r','EdgeColor','w');box off
+% xlim([mu-3*sigma,mu+3*sigma])
+% a2=axes;
+% % %ezplot(@(x)normpdf(x,mu,sigma),[mu-3*sigma,mu+3*sigma])
+% % ezplot(@(grayscale)V(1)*grayscale*grayscale+V(2)*grayscale+V(3),[min(x),max(x)])
+% set(a2,'box','off','yaxislocation','right','color','none')
+% title '频数直方图与正态分布密度函数（拟合）'
 %%
 m=size(point,1);                     % 点数
 A={zeros(0,2)};                  % 元包数组中仅包含一个元素
@@ -174,87 +183,30 @@ K=[D{1}(1) D{1}(2) D{1}(3) D{1}(4) D{1}(5) D{1}(6) D{1}(7) D{1}(8) D{1}(9) D{1}(
 sin_Theta=zeros(m,1);
 cos_Theta=zeros(m,1);
 r=zeros(m,1);
-% T=zeros(m,4);
+%T=zeros(m,4);
 
-%% 梯度最大化
-% for i=1:m   
-%     KK=Coefficient(A_p,i);
-%     Coef{i}=zeros(10,1);
-%     Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
-%     K2=Coef{i}(2,1);                % 
-%     K3=Coef{i}(3,1);                % 
-%     sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
-%     cos_Theta(i)=K3/sqrt(K2^2+K3^2);
-% 
-%     a=6*(Coef{i}(7,1)*(sin_Theta(i)^3)+Coef{i}(8,1)*(sin_Theta(i)^2)*cos_Theta(i)+...
-%         Coef{i}(9,1)*sin_Theta(i)*(cos_Theta(i)^2)+Coef{i}(10,1)*(cos_Theta(i)^3));
-% %     a=6*(Coef{i}(7,1)*(sin_Theta(i)^3)+Coef{i}(10,1)*(cos_Theta(i)^3))+...
-% %     2*(Coef{i}(8,1)*sin_Theta(i)*(1+cos_Theta(i)^2)+...
-% %     Coef{i}(9,1)*cos_Theta(i)*(1+sin_Theta(i)^2));
-%     b=2*(Coef{i}(4,1)*(sin_Theta(i)^2)+Coef{i}(5,1)*sin_Theta(i)*cos_Theta(i)+...
-%         Coef{i}(6,1)*(cos_Theta(i)^2));
-%     
-%     r(i)=-b/a; %出问题了？
-%     if sin_Theta(i)*cos_Theta(i)<0
-%         r(i)=b/a; 
-%     end
-%     
-% %     if abs(cos_Theta(i))>0.99
-% %          T(i,4)=0;
-% %     elseif (r(i)>0&&sin_Theta(i)>0&&cos_Theta(i)>0)||(r(i)<0&&sin_Theta(i)<0&&cos_Theta(i)<0)
-% %         T(i,4)=1;
-% %     elseif (r(i)>0&&sin_Theta(i)>0&&cos_Theta(i)<0)||(r(i)<0&&sin_Theta(i)<0&&cos_Theta(i)>0)
-% %         T(i,4)=2;
-% %     elseif (r(i)>0&&sin_Theta(i)<0&&cos_Theta(i)>0)||(r(i)<0&&sin_Theta(i)>0&&cos_Theta(i)<0)
-% %         T(i,4)=4;
-% %     else
-% %         T(i,4)=3;    
-% %     end
-% %     T(i,1)=r(i);T(i,2)=sin_Theta(i);T(i,3)=cos_Theta(i);
-%     
-%     if abs(r(i))>=2
-%         r(i)=r(i-1);
-%     end
-% 
-%     Newpoint(i,1)=point(i,1)+r(i)*cos_Theta(i);      % x=x0+r*cos(Theta);
-%     Newpoint(i,2)=point(i,2)+r(i)*sin_Theta(i);      % y=y0+r*sin(Theta);
-% end
-
-
-%% 灰度值相等法
+% 梯度最大化
 for i=1:m   
     KK=Coefficient(A_p,i);
     Coef{i}=zeros(10,1);
-    %原作者方法
-    %Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
-    %我的方法
-    M=[K,-KK];
-    [U,D,V]=svd(M);
-    V=V/V(end,end);
-    Coef{i}=V(1:end-1,end);
-    
+    Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
     K2=Coef{i}(2,1);                % 
     K3=Coef{i}(3,1);                % 
-    %原作者
-%     sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
-%     cos_Theta(i)=K3/sqrt(K2^2+K3^2);
-
-    %修正
     cos_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
     sin_Theta(i)=K3/sqrt(K2^2+K3^2);
+
+    a=6*(Coef{i}(7,1)*(sin_Theta(i)^3)+Coef{i}(8,1)*(sin_Theta(i)^2)*cos_Theta(i)+...
+        Coef{i}(9,1)*sin_Theta(i)*(cos_Theta(i)^2)+Coef{i}(10,1)*(cos_Theta(i)^3));
+%     a=6*(Coef{i}(7,1)*(sin_Theta(i)^3)+Coef{i}(10,1)*(cos_Theta(i)^3))+...
+%     2*(Coef{i}(8,1)*sin_Theta(i)*(1+cos_Theta(i)^2)+...
+%     Coef{i}(9,1)*cos_Theta(i)*(1+sin_Theta(i)^2));
+    b=2*(Coef{i}(4,1)*(sin_Theta(i)^2)+Coef{i}(5,1)*sin_Theta(i)*cos_Theta(i)+...
+        Coef{i}(6,1)*(cos_Theta(i)^2));
     
-    a=Coef{i}(1,1)-mu;
-    b=Coef{i}(2,1)*cos_Theta(i)+Coef{i}(3,1)*sin_Theta(i);
-    c=Coef{i}(4,1)*cos_Theta(i)^2+Coef{i}(5,1)*cos_Theta(i)*sin_Theta(i)+Coef{i}(6,1)*sin_Theta(i)^2;
-    d=Coef{i}(7,1)*cos_Theta(i)^3+Coef{i}(8,1)*cos_Theta(i)^2*sin_Theta(i)+Coef{i}(9,1)*cos_Theta(i)*sin_Theta(i)^2+Coef{i}(10,1)*sin_Theta(i)^3;
-    options = optimset('Display','off','TolFun',1e-10,'TolX',1e-10);
-    eq=@(rol) a+b*rol+c*rol^2+d*rol^3;
-    rol = fsolve(eq,0.01,options);
-    %figure;ezplot(@(rol) a+b*rol+c*rol^2+d*rol^3,[-3,3])
-    r(i)=rol; %出问题了？
-%     if sin_Theta(i)*cos_Theta(i)<0
-%         r(i)=-rol; 
-%     end
+    r(i)=-b/a; %出问题了？
+    if sin_Theta(i)*cos_Theta(i)<0
+        r(i)=b/a; 
+    end
     
 %     if abs(cos_Theta(i))>0.99
 %          T(i,4)=0;
@@ -269,34 +221,87 @@ for i=1:m
 %     end
 %     T(i,1)=r(i);T(i,2)=sin_Theta(i);T(i,3)=cos_Theta(i);
     
-%     if abs(r(i))>=2
-%         r(i)=r(i-1);
-%     end
+    if abs(r(i))>=2
+        r(i)=r(i-1);
+    end
 
     Newpoint(i,1)=point(i,1)+r(i)*cos_Theta(i);      % x=x0+r*cos(Theta);
     Newpoint(i,2)=point(i,2)+r(i)*sin_Theta(i);      % y=y0+r*sin(Theta);
-    kkk=Coef{i};
-    xx=r(i)*cos_Theta(i);
-    yy=r(i)*sin_Theta(i);
-    Newpoint(i,3)=kkk(1)+kkk(2)*xx+kkk(3)*yy+kkk(4)*xx*xx+kkk(5)*yy*xx+kkk(6)*yy*yy+...
-        kkk(7)*xx^3+kkk(8)*xx^2*yy+kkk(9)*xx*yy^2+kkk(10)*yy^3;
-    Newpoint(i,4)=a+b*rol+c*rol^2+d*rol^3;
-end
-endpoint=[];
-for i=1:m
-    if abs(Newpoint(i,3)-mu)>1&&abs(Newpoint(i,4))>1
-        continue;
-    end
-    endpoint=[endpoint;Newpoint(i,:)];
 end
 
-%figure(p);imshow(img);hold on
-plot(Newpoint(:,1),Newpoint(:,2),'y*');                 %修正前
+
+%% 灰度值相等法
+% for i=1:m   
+%     KK=Coefficient(A_p,i);
+%     Coef{i}=zeros(10,1);
+%     %原作者方法
+%     %Coef{i}=K\KK;                   % det(D)表示求D的行列式,cramer法则求解
+%     %我的方法
+%     M=[K,-KK];
+%     [U,D,V]=svd(M);
+%     V=V/V(end,end);
+%     Coef{i}=V(1:end-1,end);
+%     
+%     K2=Coef{i}(2,1);                % 
+%     K3=Coef{i}(3,1);                % 
+%     %原作者
+% %     sin_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
+% %     cos_Theta(i)=K3/sqrt(K2^2+K3^2);
+% 
+%     %修正
+%     cos_Theta(i)=K2/sqrt(K2^2+K3^2);%Theta表示梯度方向与X轴夹角
+%     sin_Theta(i)=K3/sqrt(K2^2+K3^2);
+%     
+%     a=Coef{i}(1,1)-mu;
+%     b=Coef{i}(2,1)*cos_Theta(i)+Coef{i}(3,1)*sin_Theta(i);
+%     c=Coef{i}(4,1)*cos_Theta(i)^2+Coef{i}(5,1)*cos_Theta(i)*sin_Theta(i)+Coef{i}(6,1)*sin_Theta(i)^2;
+%     d=Coef{i}(7,1)*cos_Theta(i)^3+Coef{i}(8,1)*cos_Theta(i)^2*sin_Theta(i)+Coef{i}(9,1)*cos_Theta(i)*sin_Theta(i)^2+Coef{i}(10,1)*sin_Theta(i)^3;
+%     options = optimset('Display','off','TolFun',1e-10,'TolX',1e-10);
+%     eq=@(rol) a+b*rol+c*rol^2+d*rol^3;
+%     rol = fsolve(eq,0.01,options);
+%     %figure;ezplot(@(rol) a+b*rol+c*rol^2+d*rol^3,[-3,3])
+%     r(i)=rol; 
+%     Newpoint(i,1)=point(i,1)+r(i)*cos_Theta(i);      % x=x0+r*cos(Theta);
+%     Newpoint(i,2)=point(i,2)+r(i)*sin_Theta(i);      % y=y0+r*sin(Theta);
+%     kkk=Coef{i};
+%     xx=r(i)*cos_Theta(i);
+%     yy=r(i)*sin_Theta(i);
+%     Newpoint(i,3)=kkk(1)+kkk(2)*xx+kkk(3)*yy+kkk(4)*xx*xx+kkk(5)*yy*xx+kkk(6)*yy*yy+...
+%         kkk(7)*xx^3+kkk(8)*xx^2*yy+kkk(9)*xx*yy^2+kkk(10)*yy^3;
+%     Newpoint(i,4)=a+b*rol+c*rol^2+d*rol^3;
+% end
+% endpoint=[];
+% for i=1:m
+%     if abs(Newpoint(i,3)-mu)>1&&abs(Newpoint(i,4))>1
+%         continue;
+%     end
+%     endpoint=[endpoint;Newpoint(i,:)];
+% end
+%%
+%figure(p);%imshow(img);
 hold on
-plot(endpoint(:,1),endpoint(:,2),'b*');          %修正后
-plot(point(:,1),point(:,2),'r*');          %修正后
+plot(Newpoint(:,1),Newpoint(:,2),'k*');                 %修正前
+
+%figure;
+%hold on
+%plot(endpoint(:,1),endpoint(:,2),'b*');          %修正后
+% plot(point(:,1),point(:,2),'r*');          %修正后
+
 % result.point=endpoint;
-[Re, center2, vertex]= MyEllipseDirectFit(endpoint(:,1:2));
+[Re, center2, vertex]= MyEllipseDirectFit(Newpoint(:,1:2));
+    a=Re(1);
+    b=Re(2);
+    c=Re(3);
+    d=Re(4);
+    e=Re(5);
+    f=Re(6);
+    %eq0= 'a*x^2 + b*x*y + c*y^2 +d*x + e*y + f ';
+    eq0=@(x,y) a*x^2 + b*x*y + c*y^2 +d*x + e*y + f;
+    hold on;
+    h=ezplot(eq0,[center2(1)-14,center2(1)+14,center2(2)-14,center2(2)+14]);
+    set(h,'Color','b');
+% plot(center2(1),center2(2),'k*');
+% plot(centers(p,1),centers(p,2),'r*');
 % result.Re=Re;
 % result.center=center;
 % result.vertex=vertex;

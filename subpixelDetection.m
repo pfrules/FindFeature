@@ -17,11 +17,14 @@ for p=1:LengthFiles
           'Sensitivity', 0.85, 'Method', 'twostage');
         img = uint8(img * 256);
     end
-
 %     figure;
 %     imshow(img);
-%     hold on
-    %viscircles(centers,radii)
+ H=fspecial('gaussian',5,1);      % ¸ßË¹µÍÍ¨ÂË²¨Æ÷£¬ÓÃÀ´¹ıÂËÔëÉù
+ img=imfilter(img,H);       %Í¼ÏñÂË²¨¡¢±ß½çÌî³ä
+    figure;
+    imshow(img);
+    hold on
+    viscircles(centers,radii)
 result=inmyway(img,centers, radii);
       
 
