@@ -19,6 +19,7 @@ for p=1:LengthFiles
           'Sensitivity', 0.85, 'Method', 'twostage');
         img = uint8(img * 256);
     end
+    [oimg,X,Y]=myZernike(img);
     boxNum=size(centers,1);
     %²åÖµ±¶Êý
         time=2;

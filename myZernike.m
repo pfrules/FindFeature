@@ -1,5 +1,5 @@
 
-function [oimg,X,Y]=myZernike7(img0)
+function [oimg,X,Y]=myZernike(img0)
 % [n,m]=size(img0);
 % j=1:m*10;k=1:n*10;
 % [x,y]=meshgrid(1:m,1:n);%生成网格采样点
