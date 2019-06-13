@@ -19,7 +19,7 @@ for p=1:LengthFiles
           'Sensitivity', 0.85, 'Method', 'twostage');
         img = uint8(img * 256);
     end
-    [oimg,X,Y]=myZernike(img);
+    [col,row]=myZernike(img);
     boxNum=size(centers,1);
     %²åÖµ±¶Êý
         time=2;
@@ -28,6 +28,7 @@ for p=1:LengthFiles
     [xi,yi]=meshgrid(1:time*m,1:time*n);
 
     interpImg=uint8(interp2(x,y,double(img),xi/time,yi/time,'cubic'));
+    
     I=edge(interpImg,'canny');%,linear
 %     figure;
 %     imshow(I);
