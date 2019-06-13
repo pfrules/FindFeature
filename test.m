@@ -8,7 +8,7 @@ rawImageFolder = [files '\figure\'];   % 输入文件路径
 %  save('point/PixelPoints1.mat','PixelPoints1')
 load('point/PixelPoints1.mat')
  %PixelPoints2=subpixelDetection(rawImageFolder);
-  PixelPoints2=newSubpixelDetection(rawImageFolder);
+ PixelPoints2=newSubpixelDetection(rawImageFolder);
  save('point/PixelPoints2.mat','PixelPoints2')
 load ([files '\PixelPoints.mat'])
 PixelPoints3 = PhantomDetectIdealFunc();

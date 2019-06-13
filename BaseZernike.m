@@ -1,5 +1,5 @@
 
-function [oimg,X,Y]=BaseZernike1(img)
+function [oimg,X,Y]=BaseZernike(img)
 load M2;     %获取模板,7*7的
 %卷积运算
 Z00=conv2(M00,img);
