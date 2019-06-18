@@ -1,4 +1,4 @@
-function result=inmyway(img,centers, radii)
+function result=lowway(img,centers, radii)
 %% zernike方法
 % load M2;     %获取模板,7*7的
 %卷积运算

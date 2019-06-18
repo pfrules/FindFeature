@@ -1,22 +1,27 @@
-# function PixelPoints=subpixelDetection(rawImageFolder)
-        基于杨洋所写使用形态学和背景相减，加上自己的函数:
-## result=inmyway(img,centers, radii);
-        检测到的圆心半径为粗略估计，然后以拟合的方式选择梯度最大的亚像素或者灰度值相等的亚像素
+# test.m
+检测所有目标图片中标定钢球中心坐标
+# PixelPoints1=findpoint(rawImageFolder)
+对于仿真CBCT投影图像，由于图像中不存在干扰，对图像直接调用matlab自带函数imfindcircles可直接检测较好结果
+# PixelPoints=CircleSubpixelDetection(rawImageFolder)
+基于形态学和背景相减，imfindcircles圆检测大致检测大所有钢球的投影位置，结合边缘检测，拟合出中心结果。
+#### 注意：
+        由于干扰项较多，对于canny检测到的边缘，即使使用霍夫变换也很难提取出有用的边缘。出现较多干扰。为此需要结合形态学处理进行粗略定位圆的大致位置。找边缘的方法使用连通域检测，但连通域对于有些图像检测并不鲁棒
+ 找到边缘后，排除圆外特征点，方法如下：
+ ### 一、
+ 在圆内任选一点，在360度方向上计算点到特征点距离，建立特殊模型，拟合模型曲线，递归调用删除模型外点。
+ ### 二、
+ 直接进行圆拟合，递归调用逐渐删除距离较远的点。
+## result=lowway(img,centers, radii);（已弃用） 
+使用像素值拟合的方法，实验证明效果不好  
+检测到的圆心半径为粗略估计，然后以拟合的方式选择梯度最大的亚像素或者灰度值相等的亚像素
 ### 灰度值相等
         实验证明灰度值相等的方法对于实际图像会出现缺少圆的边缘缺少的情况，因为钢球图像在两边出现穿透效果不好的情况。很难找到合适的灰度值，从而使得部分检测到的边缘缺少一部分。
 ### 梯度最大
         使用梯度最大话，由于图像本身的原因，边缘不够明显，对于灰度值拟合的方法加上梯度最大话效果并不好，很多情况下出现检测特征点跑飞的情况。效果更次于灰度值相等的方法
 
-
-# PixelPoints=newSubpixelDetection(rawImageFolder)
-    另一种检测方法，先用canny算子估算边缘，然后做其他操作
-#### 注意：
-        由于干扰项较多，对于canny检测到的边缘，即使使用霍夫变换也很难提取出有用的边缘。出现较多干扰。为此需要结合形态学处理进行粗略定位圆的大致位置。
- 找到边缘后，排除圆外特征点，方法如下：
- ### 一、
- 在园内任选一点，在360度方向上计算点到特征点距离，建立特殊模型，拟合模型曲线，递归调用删除模型外点。
- ### 二、
- 直接进行圆拟合，递归调用逐渐删除距离较远的点。
-
- # PixelPoints=otherSubpixelDetection(rawImageFolder)
- 同样使用边缘检测，但是，在圆检测过程中速度较慢。形态学处理后删掉圆检测部分直接进行最大连通域检测
+# [XY,upperCenterCurrent,lowerCenterCurrent]=resort(centers,upperCenterLast,lowerCenterLast)
+对检测到的特征点，以插帧的方式进行追踪，对所有的点进行重新排序
+# [Re, center, vertex]= MyEllipseDirectFit(XY)
+椭圆拟合函数
+# [col,row,k,l]=BaseZernike(img)（已弃用）
+zernike矩检测阶跃边缘方法，使用七阶模板，由于边缘较为复杂，矩方法检测，参数范围很难确认，亚像素检测并没有起到较好的结果，
